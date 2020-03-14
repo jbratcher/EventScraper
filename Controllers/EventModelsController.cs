@@ -21,8 +21,6 @@ namespace EventScraper.Controllers
             _context = context;
         }
 
-        public List<dynamic> EventModelList;
-
         private readonly String websiteUrl = "https://www.eventbrite.com/d/ky--louisville/tech-conference/";
 
 
@@ -157,6 +155,12 @@ namespace EventScraper.Controllers
             return _context.EventModels.Any(e => e.Id == id);
         }
 
+        private bool EventModelExistsByObject(EventModel eventModel)
+        {
+            bool result = _context.EventModels.Any(e => e.EventModelDateTime == eventModel.EventModelDateTime && e.Title == eventModel.Title);
+            return result;
+        }
+
         private async Task<IActionResult> GetPageData(string url)
         {
             var config = Configuration.Default.WithDefaultLoader();
@@ -164,6 +168,8 @@ namespace EventScraper.Controllers
             var document = await context.OpenAsync(url);
 
             var eventCards = document.QuerySelectorAll(".eds-media-card-content__content__principal");
+
+            List<dynamic> EventModelList = new List<dynamic>();
 
             foreach (var row in eventCards)
             {
@@ -185,13 +191,13 @@ namespace EventScraper.Controllers
                 // event price
                 newEvent.Price = row.LastChild.LastChild.TextContent;
 
-                if (!EventModelExists(newEvent.Id))
+                if (!EventModelExistsByObject(newEvent))
                 {
-                    _context.Add(newEvent);
+                    EventModelList.Add(newEvent);
                 }
                 else
                 {
-                    _context.Update(newEvent);
+                    continue;
                 }
             }
 
@@ -208,6 +214,10 @@ namespace EventScraper.Controllers
             //{
             //    return await GetPageData(nextPageUrl);
             //}
+
+            IEnumerable<dynamic> DistinctEvents = EventModelList.Distinct();
+
+            _context.AddRange(DistinctEvents);
 
             await _context.SaveChangesAsync();
 
