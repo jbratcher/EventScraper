@@ -29,8 +29,6 @@ namespace EventScraper.Controllers
         // GET: EventModels
         public async Task<IActionResult> Index()
         {
-            await GetPageData(websiteUrl);
-
             return View(await _context.EventModels.ToListAsync());
         }
 
@@ -213,8 +211,15 @@ namespace EventScraper.Controllers
 
             await _context.SaveChangesAsync();
 
-            return Redirect("/Events");
+            return Redirect("/EventModels");
 
+        }
+
+        public async Task<IActionResult> UpdateEvents()
+        {
+            await GetPageData(websiteUrl);
+
+            return Redirect("/EventModels");
         }
 
     }
