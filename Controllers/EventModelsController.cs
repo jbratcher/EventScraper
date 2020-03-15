@@ -169,7 +169,7 @@ namespace EventScraper.Controllers
 
             var eventCards = document.QuerySelectorAll(".eds-media-card-content__content__principal");
 
-            List<dynamic> EventModelList = new List<dynamic>();
+            List<EventModel> EventModelList = new List<EventModel>();
 
             foreach (var row in eventCards)
             {
@@ -183,7 +183,7 @@ namespace EventScraper.Controllers
                 newEvent.Url = row.Children[0].Children[1].GetAttribute("Href");
 
                 // event title
-                newEvent.Title = row.Children[0].Children[1].TextContent;
+                newEvent.Title = row.Children[0].Children[1].Children[0].Children[0].Children[0].TextContent;
 
                 // event location
                 newEvent.Location = row.Children[1].Children[0].TextContent;
@@ -215,7 +215,7 @@ namespace EventScraper.Controllers
             //    return await GetPageData(nextPageUrl);
             //}
 
-            IEnumerable<dynamic> DistinctEvents = EventModelList.Distinct();
+            IEnumerable<EventModel> DistinctEvents = EventModelList.Distinct();
 
             _context.AddRange(DistinctEvents);
 

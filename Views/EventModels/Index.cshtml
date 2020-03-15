@@ -40,7 +40,9 @@
                 @Html.DisplayFor(modelItem => item.EventModelDateTime)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Url)
+                <a href="@Html.DisplayFor(modelItem => item.Url)">
+                    Link
+                </a>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
