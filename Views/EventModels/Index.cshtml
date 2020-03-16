@@ -1,4 +1,4 @@
-﻿@model IEnumerable<EventScraper.Models.EventModel>
+﻿@model EventScraper.ViewModels.EventModelViewModel;
 
 @{
     ViewData["Title"] = "Index";
@@ -9,6 +9,26 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateEvents">
+            <div class="form-group">
+                <label asp-for="LocationQuery" class="control-label"></label>
+                <input asp-for="LocationQuery" class="form-control" />
+                <span asp-validation-for="LocationQuery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TypeQuery" class="control-label"></label>
+                <input asp-for="TypeQuery" class="form-control" />
+                <span asp-validation-for="TypeQuery" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="UpdateEvents" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
 <p>
     <a asp-action="UpdateEvents">Update Events</a>
 </p>
@@ -16,49 +36,50 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.EventModelDateTime)
+                @Html.DisplayNameFor(model => model.EventModels[0].EventModelDateTime)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Url)
+                @Html.DisplayNameFor(model => model.EventModels[0].Url)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                @Html.DisplayNameFor(model => model.EventModels[0].Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Location)
+                @Html.DisplayNameFor(model => model.EventModels[0].Location)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
+                @Html.DisplayNameFor(model => model.EventModels[0].Price)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventModelDateTime)
-            </td>
-            <td>
-                <a href="@Html.DisplayFor(modelItem => item.Url)">
-                    Link
-                </a>
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.EventModels)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventModelDateTime)
+                </td>
+                <td>
+                    <a href="@Html.DisplayFor(modelItem => item.Url)">
+                        Link
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

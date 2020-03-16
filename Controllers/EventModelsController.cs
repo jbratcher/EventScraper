@@ -9,6 +9,7 @@ using AngleSharp;
 using AngleSharp.Html.Parser;
 using EventScraper.Data;
 using EventScraper.Models;
+using EventScraper.ViewModels;
 
 namespace EventScraper.Controllers
 {
@@ -23,10 +24,16 @@ namespace EventScraper.Controllers
 
         private readonly string websiteUrl = "https://www.eventbrite.com/d/ky--louisville/tech-conference/";
 
+
         // GET: EventModels
         public async Task<IActionResult> Index()
         {
-            return View(await _context.EventModels.ToListAsync());
+            //return View(await _context.EventModels.ToListAsync());
+            var EventModelVM = new EventModelViewModel
+            {
+                EventModels = (await _context.EventModels.ToListAsync())
+            };
+            return View(EventModelVM);
         }
 
         // GET: EventModels/Details/5
@@ -160,8 +167,10 @@ namespace EventScraper.Controllers
             return result;
         }
 
-        private async Task<IActionResult> GetPageData(string url)
+        [HttpPost]
+        private async Task<IActionResult> GetPageData(string LocationQuery, string TypeQuery)
         {
+            var url = "https://www.eventbrite.com/d/" + LocationQuery + "/" + TypeQuery +"/";
             var config = Configuration.Default.WithDefaultLoader();
             var context = BrowsingContext.New(config);
             var document = await context.OpenAsync(url);
@@ -232,9 +241,11 @@ namespace EventScraper.Controllers
 
         }
 
-        public async Task<IActionResult> UpdateEvents()
+        [HttpPost]
+        public async Task<IActionResult> UpdateEvents([Bind("LocationQuery, TypeQuery")] EventModelViewModel eventModelViewModel)
         {
-            await GetPageData(websiteUrl);
+            string HyphenatedTypeQuery = eventModelViewModel.TypeQuery.Replace(' ', '-');
+            await GetPageData(eventModelViewModel.LocationQuery, HyphenatedTypeQuery);
 
             return Redirect("/EventModels");
         }
