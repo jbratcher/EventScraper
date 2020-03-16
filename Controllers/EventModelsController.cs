@@ -21,8 +21,7 @@ namespace EventScraper.Controllers
             _context = context;
         }
 
-        private readonly String websiteUrl = "https://www.eventbrite.com/d/ky--louisville/tech-conference/";
-
+        private readonly string websiteUrl = "https://www.eventbrite.com/d/ky--louisville/tech-conference/";
 
         // GET: EventModels
         public async Task<IActionResult> Index()
@@ -191,14 +190,24 @@ namespace EventScraper.Controllers
                 // event price
                 newEvent.Price = row.LastChild.LastChild.TextContent;
 
-                if (!EventModelExistsByObject(newEvent))
-                {
-                    EventModelList.Add(newEvent);
-                }
-                else
+                // Skip add if matching event is already in list, otherwise add to list
+                if (EventModelList.Any(e => e.EventModelDateTime == newEvent.EventModelDateTime && e.Title == newEvent.Title))
                 {
                     continue;
                 }
+                else
+                {
+                    // skip add if event is already in database
+                    if (!EventModelExistsByObject(newEvent))
+                    {
+                        EventModelList.Add(newEvent);
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
+                
             }
 
             // Check if a next page link is present
@@ -215,9 +224,7 @@ namespace EventScraper.Controllers
             //    return await GetPageData(nextPageUrl);
             //}
 
-            IEnumerable<EventModel> DistinctEvents = EventModelList.Distinct();
-
-            _context.AddRange(DistinctEvents);
+            _context.AddRange(EventModelList);
 
             await _context.SaveChangesAsync();
 
